@@ -22,10 +22,14 @@ public class BuildKite : BuildAgentBase
     // TODO could be nice to add a WriteIntegration() to write the version variables out as build meta data
     // https://buildkite.com/docs/pipelines/build-meta-data
     
-    public override string? GetCurrentBranch(bool usingDynamicRepos) =>
-        Environment.GetEnvironmentVariable("BUILDKITE_BRANCH") ??
-        Environment.GetEnvironmentVariable("BUILDKITE_TAG") ??
-        Environment.GetEnvironmentVariable("BUILDKITE_PULL_REQUEST");
+    public override string? GetCurrentBranch(bool usingDynamicRepos)
+    {
+        var currentBranch = Environment.GetEnvironmentVariable("BUILDKITE_BRANCH") ??
+                           Environment.GetEnvironmentVariable("BUILDKITE_TAG") ??
+                           Environment.GetEnvironmentVariable("BUILDKITE_PULL_REQUEST");
+        return currentBranch?.Trim('"');
+    }
+        
 
     public override bool PreventFetch() => true;
 }

@@ -81,14 +81,23 @@ public class GitPreparer : IGitPreparer
         var targetBranch = gitVersionOptions.RepositoryInfo.TargetBranch;
         if (this.buildAgent == null)
         {
+            this.log.Info($"No build agent found - using the target branch: {targetBranch}");
             return targetBranch;
         }
 
         var isDynamicRepository = !gitVersionOptions.RepositoryInfo.DynamicRepositoryClonePath.IsNullOrWhiteSpace();
-        var currentBranch = this.buildAgent.GetCurrentBranch(isDynamicRepository) ?? targetBranch;
-        this.log.Info("Branch from build environment: " + currentBranch);
+        var currentBranch = this.buildAgent.GetCurrentBranch(isDynamicRepository);
+        if (currentBranch != null)
+        {
+            this.log.Info("Branch from build environment: " + currentBranch);
+        }
+        else
+        {
+            this.log.Info($"No branch found from build environment - using the target branch: {targetBranch}");
+        }
+        
 
-        return currentBranch;
+        return currentBranch ?? targetBranch;
     }
 
     private void CleanupDuplicateOrigin()

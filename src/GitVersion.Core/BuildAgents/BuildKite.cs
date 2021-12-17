@@ -13,6 +13,15 @@ public class BuildKite : BuildAgentBase
 
     protected override string EnvironmentVariable { get; } = EnvironmentVariableName;
 
+    public override bool CanApplyToCurrentContext()
+    {
+        Console.WriteLine($"The BUILDKITE environment variable={Environment.GetEnvironmentVariable(EnvironmentVariable)}");
+        Console.WriteLine($"The BUILDKITE_BRANCH environment variable={Environment.GetEnvironmentVariable("BUILDKITE_BRANCH")}");
+        Console.WriteLine($"The BUILDKITE_TAG environment variable={Environment.GetEnvironmentVariable("BUILDKITE_BRANCH")}");
+        Console.WriteLine($"The BUILDKITE_PULL_REQUEST environment variable={Environment.GetEnvironmentVariable("BUILDKITE_PULL_REQUEST")}");
+        return Environment.GetEnvironmentVariable(EnvironmentVariable)?.Trim('"').Equals("true", StringComparison.OrdinalIgnoreCase) ?? false;
+    }
+    
     public override string GenerateSetVersionMessage(VersionVariables variables) =>
         string.Empty; // There is no equivalent function in BuildKite.
 
@@ -27,6 +36,8 @@ public class BuildKite : BuildAgentBase
         var currentBranch = Environment.GetEnvironmentVariable("BUILDKITE_BRANCH") ??
                            Environment.GetEnvironmentVariable("BUILDKITE_TAG") ??
                            Environment.GetEnvironmentVariable("BUILDKITE_PULL_REQUEST");
+
+        Console.WriteLine($"The BuildKite Agent thinks the current branch is: {currentBranch}");
         return currentBranch?.Trim('"');
     }
         
